@@ -28,7 +28,8 @@
                         </div>
                     </nav>
 
-                  <?php
+                 
+                    <?php
                         if(isset($_GET['post_id'])) {
                             $post_id = $_GET['post_id'];
                             $sql = "SELECT * FROM posts WHERE post_id = :id";
@@ -42,7 +43,7 @@
                                 header("Location: index.php");
                             }
                             $post_title = $post['post_title'];
-
+                            $post_image = $post['post_image'];
                             $post_category_id = $post['post_category_id'];
                             $sql = "SELECT * FROM categories WHERE category_id = :id";
                             $stmt = $pdo->prepare($sql);
@@ -71,11 +72,14 @@
                             <div class="container text-center">
                                 <div class="row justify-content-center">
                                     <div class="col-lg-8">
-                                        <h1 class="page-header-title mb-3"><?php echo $post_title; ?></h1>
-                                        <p class="page-header-text">
+
+                                        <h1 class="page-header-title mb-3"><?php echo $post_title; ?></h1><br>
+                                          <img src="./img/<?php echo $post_image;?>" width="600" height="500">
+                                        <p class="page-header-text"> <br>
                                             Category: <?php echo $post_category; ?>,
                                             Posted by: <?php echo $post_author; ?>
                                         </p>
+
                                     </div>
                                 </div>
                             </div>
@@ -87,6 +91,7 @@
                     <section class="bg-white py-10">
                         <div class="container">
                             <!--start post content-->
+                            
                             <div>
                                 <h1><?php echo $post_title; ?></h1>
                                 <p class="lead">
@@ -102,62 +107,62 @@
                                 </div>
                                 <hr class="mb-4" />
                                 <?php 
-                                    $sql = "SELECT * FROM comments WHERE com_status = :status AND com_post_id = :id";
+                                    $sql = "SELECT * FROM comments WHERE comment_post_id = :id";
                                     $stmt = $pdo->prepare($sql);
                                     $stmt->execute([
-                                        ':status' => 'approved',
                                         ':id' => $_GET['post_id']
                                     ]);
                                     $count = $stmt->rowCount();
                                     if($count == 0) {
                                         echo "No comments";
                                     } else {
-                                        while($comments = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                            $user_name = $comments['com_user_name'];
-                                            $com_date = $comments['com_date'];
-                                            $com_detail = $comments['com_detail'];
+                                        $sql1 = "SELECT * FROM comments WHERE comment_post_id = :id";
+                                        $stmt1 = $pdo->prepare($sql1);
+                                        $stmt1->execute([
+                                            ':id' => $_GET['post_id']
+                                        ]);
+                                        while($comments = $stmt1->fetch(PDO::FETCH_ASSOC)) {
+                                            $user_name = $comments['comment_user_name'];
+                                            $com_date = $comments['comment_date'];
+                                            $com_detail = $comments['comment_detail']; 
                                             $com_status = $comments['comment_status'];
                                             $com_user_id = $comments['comment_user_id'];
-
+                                            // com status unpproved and com_user_id == singedInUserID
                                             if(isset($_SESSION['user_id'])) {
                                                 $signed_in_user_id = $_SESSION['user_id'];
-                                             }
-                                             else if (isset($_COOKIE['_uid_'])) {
+                                            } else if(isset($_COOKIE['_uid_'])) {
                                                 $signed_in_user_id = base64_decode($_COOKIE['_uid_']);
-                                             } else {
+                                            } else  {
                                                 $signed_in_user_id = -1;
-                                             } 
+                                            }
 
-                                             if ($com_status == 'unapproved' && $com_user_id == $signed_in_user_id) { ?>
+                                            if($com_status == 'unapproved' && $com_user_id == $signed_in_user_id) { ?>
                                                 <div class="card mb-5">
-                                                <div class="card-header d-flex justify-content-between">
-                                                    <div class="mr-2 text-dark">
-                                                        <?php echo $user_name; ?>
-                                                        <div class="text-xs text-muted"><?php echo $com_date; ?></div>
+                                                    <div class="card-header d-flex justify-content-between">
+                                                        <div class="mr-2 text-dark">
+                                                            <?php echo $user_name; ?>
+                                                            <div class="text-xs text-muted"><?php echo $com_date; ?></div>
+                                                        </div>
+                                                        <div class="h5"><span class="badge badge-warning-soft text-warning font-weight-normal">Awaiting Response</span></div>
                                                     </div>
-                                                     <div class="h5"><span class="badge badge-warning-soft text-warning font-weight-normal">Awaiting Response</span></div>
-                                                </div>
-                                                <div class="card-body">
-                                                    <?php echo $com_detail; ?>
-                                                </div>
-                                            </div>
-
-                                             <?php } else if ($com_status == 'approved') { ?>
-                                               <div class="card mb-5">
-                                                <div class="card-header d-flex justify-content-between">
-                                                    <div class="mr-2 text-dark">
-                                                        <?php echo $user_name; ?>
-                                                        <div class="text-xs text-muted"><?php echo $com_date; ?></div>
+                                                    <div class="card-body">
+                                                        <?php echo $com_detail; ?>
                                                     </div>
                                                 </div>
-                                                <div class="card-body">
-                                                    <?php echo $com_detail; ?>
+                                           <?php } else if($com_status == 'approved') { ?>
+                                                <div class="card mb-5">
+                                                    <div class="card-header d-flex justify-content-between">
+                                                        <div class="mr-2 text-dark">
+                                                            <?php echo $user_name; ?>
+                                                            <div class="text-xs text-muted"><?php echo $com_date; ?></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <?php echo $com_detail; ?>
+                                                    </div>
                                                 </div>
-                                            </div>
-
-                                             <?php }
-                                             ?>
-                                            
+                                            <?php }
+                                            ?>
 
                                             
 
@@ -173,8 +178,16 @@
                                                 <?php 
                                                     if(isset($_POST['submit'])) {
                                                         $comments = trim($_POST['comments']);
-                                                        $sql = "INSERT INTO comments (com_post_id, com_detail, com_user_id, com_user_name, com_date, com_status) VALUES (:post_id, :com_detail, :user_id, :user_name, :com_date, :com_status)";
+                                                        $sql = "INSERT INTO comments (comment_post_id, comment_detail, comment_user_id, comment_user_name, comment_date, comment_status) VALUES (:post_id, :com_detail, :user_id, :user_name, :com_date, :com_status)";
                                                         $stmt = $pdo->prepare($sql);
+
+                                                        if(isset($_SESSION['user_id'])) {
+                                                            $signed_in_user_id = $_SESSION['user_id'];
+                                                        } else if(isset($_COOKIE['_uid_'])) {
+                                                            $signed_in_user_id = base64_decode($_COOKIE['_uid_']);
+                                                        } else  {
+                                                            $signed_in_user_id = -1;
+                                                        }
 
                                                         $sql2 = "SELECT * FROM users WHERE user_id = :id";
                                                         $stmt2 = $pdo->prepare($sql2);
@@ -195,7 +208,6 @@
                                                         header("Location: single.php?post_id={$_GET['post_id']}");
                                                     }
                                                 ?>
-
                                                 <form action="single.php?post_id=<?php echo $_GET['post_id']; ?>" method="POST">
                                                     <textarea name="comments" placeholder="Type here..." class="form-control mb-2" rows="4"></textarea>
                                                     <button type="submit" name="submit" class="btn btn-primary btn-sm mr-2">Post Comment</button>

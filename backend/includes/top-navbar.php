@@ -2,11 +2,24 @@
     <a class="navbar-brand d-none d-sm-block" href="index.php">Admin Panel</a><button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 mr-lg-2" id="sidebarToggle" href="#"><i data-feather="menu"></i></button>
     <ul class="navbar-nav align-items-center ml-auto">
         
+        <?php 
+            $sql = "SELECT * FROM comments WHERE comment_state = :state";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':state' => 0
+            ]);
+            $count_comment = $stmt->rowCount();
+        ?>
         <!--User Registration + New Comment Notification-->
         <li class="nav-item dropdown no-caret mr-3 dropdown-notifications">
-            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownAlerts" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownAlerts" href="comments.php" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i data-feather="bell"></i>
-                <span class="badge badge-red">2</span>
+                <?php 
+                    if($count_comment != 0) { ?>
+                        <span class="badge badge-red"><?php echo $count_comment; ?></span>
+                   <?php }
+                ?>
+                
             </a>
 
             <div class="dropdown-menu dropdown-menu-right border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownAlerts">
@@ -15,44 +28,52 @@
                     Notification
                 </h6>
 
-                <a class="dropdown-item dropdown-notifications-item" href="#!">
-                    <div class="dropdown-notifications-item-icon bg-warning"><i data-feather="activity"></i></div>
-                    <div class="dropdown-notifications-item-content">
+                <?php 
+                    $sql = "SELECT * FROM comments WHERE comment_state = :state";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([
+                        ':state' => 0
+                    ]);
+                    while($com = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $com_date = $com['comment_date'];
+                        $com_detail = substr($com['comment_detail'],0, 35); ?>
+                            <a class="dropdown-item dropdown-notifications-item" href="comments.php">
+                                <div class="dropdown-notifications-item-icon bg-warning"><i data-feather="activity"></i></div>
+                                <div class="dropdown-notifications-item-content">
 
-                        <div class="dropdown-notifications-item-content-details">
-                            December 29, 2019
-                        </div>
-                        <div class="dropdown-notifications-item-content-text">
-                            This is an alert message. It&apos;s nothing serious, but it requires your attention.
-                        </div>
-                    </div>
-                </a>
+                                    <div class="dropdown-notifications-item-content-details">
+                                        <?php echo $com_date; ?>
+                                    </div>
+                                    <div class="dropdown-notifications-item-content-text">
+                                        <?php echo $com_detail; ?>
+                                    </div>
+                                </div>
+                            </a>
+                   <?php }
+                ?>
 
-                <a class="dropdown-item dropdown-notifications-item" href="#!">
-                    <div class="dropdown-notifications-item-icon bg-warning"><i data-feather="activity"></i></div>
-                    <div class="dropdown-notifications-item-content">
-
-                        <div class="dropdown-notifications-item-content-details">
-                            December 29, 2019
-                        </div>
-                        <div class="dropdown-notifications-item-content-text">
-                            This is an alert message. It&apos;s nothing serious, but it requires your attention.
-                        </div>
-                    </div>
-                </a>
-
-                <a class="dropdown-item dropdown-notifications-footer" href="#">
-                    View All Alerts
+                <a class="dropdown-item dropdown-notifications-footer" href="comments.php">
+                    View All Notification
                 </a>
             </div>
         </li>
         <!--User Registration + New Comment Notification-->
 
+        <?php 
+            $sql = "SELECT * FROM messages WHERE ms_state = :state";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':state'=>0]);
+            $count = $stmt->rowCount();
+        ?>
         <!--Message Notification-->
         <li class="nav-item dropdown no-caret mr-3 dropdown-notifications">
             <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownMessages" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i data-feather="mail"></i>
-                <span class="badge badge-red">1</span>
+                <?php 
+                    if($count != 0) { ?>
+                        <span class="badge badge-red"><?php echo $count; ?></span>
+                   <?php } 
+                ?>
             </a>
             <div class="dropdown-menu dropdown-menu-right border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownMessages">
                 <h6 class="dropdown-header dropdown-notifications-header">
@@ -60,19 +81,26 @@
                     Message Notification
                 </h6>
 
-                <a class="dropdown-item dropdown-notifications-item" href="#"
-                    ><img class="dropdown-notifications-item-img" src="./assets/img/mdabarik.jpg" />
-                    <div class="dropdown-notifications-item-content">
-                        <div class="dropdown-notifications-item-content-text">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing.
-                        </div>
-                        <div class="dropdown-notifications-item-content-details">
-                            Md. A. Barik &#xB7; 58m
-                        </div>
-                    </div>
-                </a>
+                <?php 
+                    while($messages = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $ms_detail = $messages['ms_detail'];
+                        $ms_username = $messages['ms_username'];
+                        $ms_date = $messages['ms_date']; ?>
+                            <a class="dropdown-item dropdown-notifications-item" href="messages.php">
+                                <div class="dropdown-notifications-item-content">
+                                    <div class="dropdown-notifications-item-content-text">
+                                        <?php echo $ms_detail; ?>
+                                    </div>
+                                    <div class="dropdown-notifications-item-content-details">
+                                        <?php echo $ms_username; ?> &#xB7; <?php echo $ms_date; ?>
+                                    </div>
+                                </div>
+                            </a>
+                    <?php }
+                ?>
+                
 
-                <a class="dropdown-item dropdown-notifications-footer" href="messages">
+                <a class="dropdown-item dropdown-notifications-footer" href="messages.php">
                     Read All Messages
                 </a>
             </div>

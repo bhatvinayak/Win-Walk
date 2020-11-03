@@ -15,7 +15,7 @@
     </head>
 
 <?php 
-    if( isset($_SESSION['login']) && $_SESSION['user_role'] == 'Admin') {
+    if( isset($_SESSION['login']) && $_SESSION['user_role'] == 'admin') {
 
     }
     else {

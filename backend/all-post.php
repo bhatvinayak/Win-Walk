@@ -1,25 +1,16 @@
 <?php require_once('./includes/header.php'); ?>
 
     <body class="nav-fixed">
-       <?php require_once('./includes/top-navbar.php');?>
+        <?php require_once('./includes/top-navbar.php'); ?>
+        
 
         <!--Side Nav-->
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
                 <?php 
-                   $curr_page = basename(__FILE__);
-                   require_once('./includes/left-sidebar.php'); 
-               ?>
-                    </div>
-
-                    <div class="sidenav-footer">
-                        <div class="sidenav-footer-content">
-                            <div class="sidenav-footer-subtitle">Logged in as:</div>
-                            <div class="sidenav-footer-title">Md. A. Barik</div>
-                        </div>
-                    </div>
-
-                </nav>
+                    $curr_page = basename(__FILE__);
+                    require_once("./includes/left-sidebar.php");
+                ?>
             </div>
 
 
@@ -53,7 +44,7 @@
                                                 <th>Image</th>
                                                 <th>Date</th>
                                                 <th>Details</th>
-                                                <th>Tags</th>
+                                               
                                                 <th>Comments</th>
                                                 <th>Views</th>
                                                 <th>Edit</th>
@@ -70,7 +61,7 @@
                                                 <th>Image</th>
                                                 <th>Date</th>
                                                 <th>Details</th>
-                                                <th>Tags</th>
+                                                
                                                 <th>Comments</th>
                                                 <th>Views</th>
                                                 <th>Edit</th>
@@ -79,58 +70,79 @@
                                             </tr>
                                         </tfoot>
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>
-                                                    <a href="#">I Love You!</a>
-                                                </td>
-                                                <td>
-                                                    <div class="badge badge-success">Published
-                                                    </div>
-                                                </td>
-                                                <td>Love</td>
-                                                <td>Md. A. Barik</td>
-                                                <td>Image</td>
-                                                <td>17 Nov 2020</td>
-                                                <td>Post details</td>
-                                                <td>Important Tags</td>
-                                                <td>
-                                                    <a href="comments.html">2</a>
-                                                </td>
-                                                <td>100</td>
-                                                <td>
-                                                    <button class="btn btn-blue btn-icon"><i data-feather="edit"></i></button>
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-red btn-icon"><i data-feather="trash-2"></i></button>
-                                                </td>
-                                            </tr>  
-                                            <tr>
-                                                <td>2</td>
-                                                <td>
-                                                    <a href="#">I Love You!</a>
-                                                </td>
-                                                <td>
-                                                    <div class="badge badge-warning">Draft
-                                                    </div>
-                                                </td>
-                                                <td>Love</td>
-                                                <td>Md. A. Barik</td>
-                                                <td>Image</td>
-                                                <td>17 Nov 2020</td>
-                                                <td>Post details</td>
-                                                <td>Important Tags</td>
-                                                <td>
-                                                    <a href="comments.html">2</a>
-                                                </td>
-                                                <td>100</td>
-                                                <td>
-                                                    <button class="btn btn-blue btn-icon"><i data-feather="edit"></i></button>
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-red btn-icon"><i data-feather="trash-2"></i></button>
-                                                </td>
-                                            </tr>                     
+                                             <?php 
+                                                if(isset($_POST['delete-post'])) {
+                                                    $post_id = $_POST['post-id'];
+                                                    $sql = "DELETE FROM posts WHERE post_id = :id";
+                                                    $stmt = $pdo->prepare($sql);
+                                                    $stmt->execute([
+                                                        ':id' => $post_id
+                                                    ]);
+                                                    header("Location: ./all-post.php");
+                                                }
+                                            ?>
+                                            <?php 
+                                                $sql = "SELECT * FROM posts";
+                                                $stmt = $pdo->prepare($sql);
+                                                $stmt->execute();
+                                                while($posts = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                                    // post_id, post_category_id, post_title, post_details, 
+                                                    // post_image, post_date, post_status, post_author, post_views, 
+                                                    // post_comment_count, post_tags
+                                                    $post_id = $posts['post_id'];
+                                                    $post_category_id = $posts['post_category_id'];
+                                                    // category_name from categories table
+                                                    $sql1 = "SELECT * FROM categories WHERE category_id = :id";
+                                                    $stmt1 = $pdo->prepare($sql1);
+                                                    $stmt1->execute([':id'=>$post_category_id]);
+                                                    $cat = $stmt1->fetch(PDO::FETCH_ASSOC);
+                                                    $category_title = $cat['category_name'];
+
+                                                    $post_title = $posts['post_title'];
+                                                    $post_details = substr($posts['post_detail'], 0, 10);
+                                                    $post_image = $posts['post_image'];
+                                                    $post_date = $posts['post_date'];
+                                                    $post_status = $posts['post_status'];
+                                                    $post_author = $posts['post_author'];
+                                                    $post_views = $posts['post_views'];
+                                                    $post_comment_count = $posts['post_comment_count'];
+                                                     ?>
+                                                    <tr>
+                                                        <td><?php echo $post_id; ?></td>
+                                                        <td>
+                                                            <a href="../single.php?post_id=<?php echo $post_id ?>" target="_blank"><?php echo $post_title; ?></a>
+                                                        </td>
+                                                        <td>
+                                                            <div class="badge badge-<?php echo $post_status=='Published'?'success':'warning'; ?>"><?php echo $post_status; ?></div>
+                                                        </td>
+                                                        <td><?php echo $category_title; ?></td>
+                                                        <td><?php echo $post_author; ?></td>
+                                                        <td>
+                                                            <img src="./../img/<?php echo $post_image; ?>" width="50" height="50" />
+                                                        </td>
+                                                        <td><?php echo $post_date; ?></td>
+                                                        <td><?php echo $post_details; ?></td>
+                                                        
+                                                        <td>
+                                                            <a href="comments.php"><?php echo $post_comment_count; ?></a>
+                                                        </td>
+                                                        <td><?php echo $post_views; ?></td>
+                                                        <td>
+                                                            <form action="./edit-post.php" method="POST">
+                                                                <input type="hidden" value="<?php echo $post_id; ?>" name="post-id" />
+                                                                <button name="edit-post" type="submit" class="btn btn-blue btn-icon"><i data-feather="edit"></i></button>
+                                                            </form>
+                                                        </td>
+                                                        <td>
+                                                            <form action="./all-post.php" method="POST">
+                                                                <input type="hidden" name="post-id" value="<?php echo $post_id; ?>" />
+                                                                <button name="delete-post" type="submit" class="btn btn-red btn-icon"><i data-feather="trash-2"></i></button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                               <?php }
+                                            ?>
+
                                         </tbody>
                                     </table>
                                 </div>

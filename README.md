@@ -9,7 +9,7 @@ This project is made to build a community, to collaborate with like minded peopl
 
 Backend : PHP
 
-Frontend : HTML, CSS & JavaScript
+Frontend : HTML, CSS , JavaScript & Bootstrap
 
 Database: MySQL
 

@@ -114,7 +114,6 @@
                                             </div>
                                             <hr />
                                             <div class="post-preview-meta">
-                                                <img class="post-preview-meta-img" src="./img/mdabarik.jpg" />
                                                 <div class="post-preview-meta-details">
                                                     <div class="post-preview-meta-details-name"><?php echo $post_author; ?></div>
                                                     <div class="post-preview-meta-details-date"><?php echo $post_date; ?></div>
@@ -174,7 +173,6 @@
                                                     </div>
                                                     <div class="card-footer d-flex align-items-center justify-content-between">
                                                         <div class="post-preview-meta">
-                                                            <img class="post-preview-meta-img" src="./img/mdabarik.jpg" />
                                                             <div class="post-preview-meta-details">
                                                                 <div class="post-preview-meta-details-name"><?php echo $post_author; ?></div>
                                                                 <div class="post-preview-meta-details-date"><?php echo $post_date; ?></div>
@@ -278,7 +276,6 @@
                                                     </div>
                                                     <div class="card-footer d-flex align-items-center justify-content-between">
                                                         <div class="post-preview-meta">
-                                                            <img class="post-preview-meta-img" src="./img/mdabarik.jpg" />
                                                             <div class="post-preview-meta-details">
                                                                 <div class="post-preview-meta-details-name"><?php echo $post_author; ?></div>
                                                                 <div class="post-preview-meta-details-date"><?php echo $post_date; ?></div>
@@ -314,7 +311,7 @@
                                         <div class="col-lg-4 col-md-6 mb-5">
                                             <a class="card card-link border-top border-top-lg border-primary h-100 lift" href="categories.php?category_id=<?php echo $category_id; ?>&category_name=<?php echo $category_title; ?>"
                                                 ><div class="card-body p-5">
-                                                    <div class="icon-stack icon-stack-lg bg-primary-soft text-primary mb-4"><i data-feather="user"></i></div>
+                                                    <div class="icon-stack icon-stack-lg bg-primary-soft text-primary mb-4"><i class="fa fas fa-certificate"></i></div>
                                                     <h6><?php echo $category_title; ?></h6>
                                                 </div>
                                                 <div class="card-footer bg-transparent pt-0 pb-5"><div class="badge badge-pill badge-light font-weight-normal px-3 py-2"><?php echo $total_posts; ?> Posts</div></div></a
@@ -355,22 +352,4 @@
 
                 </main>
             </div>
-
-            <div id="layoutDefault_footer">
-                <footer class="footer pt-2 pb-4 mt-auto bg-dark footer-dark">
-                    <div class="container">
-                        <hr class="mb-1" />
-                        <div class="row align-items-center">
-                            <div class="col-md-6 small">Copyright &#xA9;win-walk 2020</div>
-                            <div class="col-md-6 text-md-right small">
-                                <a href="privacy-policy.php">Privacy Policy</a>
-                                &#xB7;
-                                <a href="terms-conditions.php">Terms &amp; Conditions</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
-            </div>
-        </div>
-
 <?php require_once("./includes/footer.php"); ?>

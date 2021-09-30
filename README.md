@@ -14,3 +14,8 @@ Frontend : HTML, CSS , JavaScript & Bootstrap
 Database: MySQL
 
 [See project](https://winwalk.rf.gd/)
+
+
+Software Required: XAMP/WAMP
+Code Editor Used: VS code
+
